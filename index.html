@@ -1,40 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Valentine Chest Animation</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Surprise</title>
+    <style>
+        :root {
+            --deep-violet: #9b67e6;
+            --envelope-bg: #fff0f5;
+            --orchid-pink: #da70d6;
+            --siamese-cream: #f5ebe0;
+            --siamese-dark: #5d4037;
+        }
 
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #3b0d5c, #6b3f95);
-  font-family: 'Montserrat', sans-serif;
-}
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle, #fff0f5 0%, #ffdee9 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
+        /* --- Layout Container --- */
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px; 
+            position: relative;
+        }
 
-.chest {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 2;
-}
+        /* --- Envelope --- */
+        #envelope-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background-color: var(--envelope-bg);
+            border: 2px solid #f8bbd0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 10;
+        }
 
-#openText {
-  position: absolute;
-  left: 50%;
+        #envelope-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 0; height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #f48fb1;
+            z-index: 1;
+        }
+
+        /* --- The "Dodge" Button Area --- */
+        .button-zone {
+            width: 300px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #dodge-btn {
+            position: absolute;
+            padding: 12px 40px;
+            background-color: var(--deep-violet);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            /* Faster transition for more reactive dodging */
+            transition: all 0.2s ease-out; 
+            z-index: 20;
+            box-shadow: 0 4px 15px rgba(155, 103, 230, 0.4);
+            white-space: nowrap;
+            /* Prevents long-press menu on mobile */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* --- Full Body Siamese Cat --- */
+        #cat-container {
+            position: fixed;
+            bottom: -300px;
+            right: 40px;
+            width: 180px;
+            height: 220px;
+            transition: bottom 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .cat-body {
+            position: absolute;
+            width: 100px;
+            height: 120px;
+            background: var(--siamese-cream);
+            border-radius: 50% 50% 30% 30%;
+            bottom: 0; left: 40px;
+            border: 2px solid #e0d5c8;
+        }
+
+        .cat-head {
+            position: absolute;
+            width: 85px; height: 75px;
+            background: var(--siamese-cream);
+            border-radius: 50%;
+            top: -40px; left: 7px;
+            border: 2px solid #e0d5c8;
+        }
+
+        .cat-face-mask {
+            position: absolute;
+            width: 55px; height: 40px;
+            background: var(--siamese-dark);
+            border-radius: 50%;
+            top: 25px; left: 15px;
+            z-index: 2;
+        }
+
+        .eye { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; top: 32px; z-index: 3; }
+        .eye.left { left: 25px; }
+        .eye.right { right: 25px; }
+        .nose { position: absolute; width: 6px; height: 4px; background: #222; border-radius: 50%; top: 45px; left: 50%; transform: translateX(-50%); z-index: 3; }
+
+        .ear {
+            position: absolute; width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 28px solid var(--siamese-dark);
+            top: -12px;
+        }
+        .ear.left { left: 0px; transform: rotate(-20deg); }
+        .ear.right { right: 0px; transform: rotate(20deg); }
+
+        .tail {
+            position: absolute; width: 60px; height: 15px;
+            background: var(--siamese-dark);
+            border-radius: 10px;
+            right: 0px; bottom: 40px;
+            transform-origin: left center;
+            animation: tailWag 2s infinite ease-in-out;
+        }
+
+        @keyframes tailWag { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(35deg); } }
+
+        .orchid-branch {
+            position: absolute; left: -25px; top: 10px;
+            opacity: 0; display: flex; align-items: center;
+            transform: rotate(-15deg) scale(0.5);
+            transition: all 0.8s ease 1s; z-index: 10;
+        }
+
+        .stem { width: 45px; height: 4px; background: #4caf50; border-radius: 2px; }
+        .orchid-flower { font-size: 26px; filter: drop-shadow(1px 1px 0 white); margin-left: -5px; }
+
+        /* --- Fixed Butterfly --- */
+        .butterfly-box { position: fixed; pointer-events: none; z-index: 100; }
+        .butterfly { position: relative; width: 50px; height: 40px; transform: rotate(-15deg); }
+        .bf-body { position: absolute; width: 25px; height: 5px; background: #333; border-radius: 10px; top: 20px; left: 10px; z-index: 2; }
+        .wing {
+            position: absolute; background: linear-gradient(135deg, #d4a5ff 0%, #9b67e6 100%);
+            border: 1.5px solid #5a2d82; border-radius: 50% 50% 10% 50%;
+            transform-origin: bottom center; opacity: 0.9;
+        }
+        .upper-wing { width: 35px; height: 30px; top: -5px; left: 5px; animation: wingFlap 0.4s infinite ease-in-out; z-index: 3; }
+        .lower-wing { width: 25px; height: 20px; top: 5px; left: 0px; opacity: 0.7; animation: wingFlap 0.4s infinite ease-in-out 0.1s; z-index: 1; }
+
+        @keyframes wingFlap { 0%, 100% { transform: skewY(0deg) scaleY(1); } 50% { transform: skewY(-20deg) scaleY(0.3); } }
+        @keyframes flyAcross { from { right: -100px; transform: translateY(0); } to { right: 110vw; transform: translateY(-50px); } }
+
+        /* --- Final Reveal --- */
+        #message { display: none; position: absolute; text-align: center; color: var(--deep-violet); z-index: 50; }
+        #message h1 { font-size: clamp(2.5rem, 10vw, 5rem); animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .burst { animation: burstOut 0.8s ease-out forwards; }
+        @keyframes burstOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(5); opacity: 0; } }
+
+        .petal, .heart { position: fixed; top: -10%; pointer-events: none; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper" id="ui-container">
+        <div id="envelope-container"></div>
+        <div class="button-zone">
+            <button id="dodge-btn">Open</button>
+        </div>
+    </div>
+
+    <div id="message">
+        <h1>I LOVEEE YOUUUU! LAAAAAAAB.<br>Happy Valentine's Day</h1>
+    </div>
+
+    <div id="cat-container">
+        <div class="orchid-branch" id="orchids">
+            <div class="stem"></div>
+            <span class="orchid-flower">🌺</span>
+            <span class="orchid-flower">🌺</span>
+        </div>
+        <div class="tail"></div>
+        <div class="cat-body">
+            <div class="cat-head">
+                <div class="ear left"></div>
+                <div class="ear right"></div>
+                <div class="cat-face-mask">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="nose"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope-container');
+        const btn = document.getElementById('dodge-btn');
+        const message = document.getElementById('message');
+        const uiContainer = document.getElementById('ui-container');
+        const cat = document.getElementById('cat-container');
+        const orchids = document.getElementById('orchids');
+        let clickCount = 0;
+
+        // --- FIXED DODGE LOGIC ---
+        function dodge() {
+            // Increase range for mobile so it's harder to catch
+            const rangeX = window.innerWidth > 500 ? 250 : 150; 
+            const rangeY = window.innerWidth > 500 ? 150 : 100;
+            
+            const randomX = (Math.random() - 0.5) * rangeX * 2;
+            const randomY = (Math.random() - 0.5) * rangeY * 2;
+            
+            btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        // Mouse dodge (PC)
+        btn.addEventListener('mouseover', dodge);
+
+        // Touch dodge (Mobile) - triggers immediately when the finger starts to touch
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevents the actual click/tap from happening easily
+            dodge();
+        });
+
+        // 2. Click Logic for Envelope
+        envelope.addEventListener('click', () => {
+            clickCount++;
+            envelope.classList.remove('shake');
+            void envelope.offsetWidth; 
+            envelope.classList.add('shake');
+
+            if (clickCount >= 5) {
+                envelope.classList.add('burst');
+                btn.style.opacity = '0';
+                btn.style.pointerEvents = 'none'; // Disable dodging after open
+                setTimeout(() => {
+                    uiContainer.style.display = 'none';
+                    message.style.display = 'block';
+                    revealCat(); 
+                    startMagic();
+                }, 600);
+            }
+        });
+
+        function revealCat() {
+            cat.style.bottom = "-20px"; 
+            setTimeout(() => {
+                orchids.style.opacity = "1";
+                orchids.style.transform = "rotate(10deg) scale(1)";
+            }, 1000);
+        }
+
+        function startMagic() {
+            setInterval(createFalling, 300);
+            setInterval(spawnButterfly, 1500);
+        }
+
+        function createFalling() {
+            const item = document.createElement('div');
+            const isHeart = Math.random() > 0.5;
+            item.className = isHeart ? 'heart' : 'petal';
+            item.innerHTML = isHeart ? '💜' : '🌸';
+            item.style.left = Math.random() * 100 + 'vw';
+            item.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            const dur = Math.random() * 3 + 4;
+            item.style.animation = `fall ${dur}s linear forwards`;
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), dur * 1000);
+        }
+
+        function spawnButterfly() {
+            const box = document.createElement('div');
+            box.className = 'butterfly-box';
+            box.innerHTML = `
+                <div class="butterfly">
+                    <div class="bf-body"></div>
+                    <div class="wing lower-wing"></div>
+                    <div class="wing upper-wing"></div>
+                </div>
+            `;
+            const startTop = Math.random() * 70 + 10;
+            box.style.top = startTop + 'vh';
+            const dur = Math.random() * 4 + 6;
+            box.style.animation = `flyAcross ${dur}s linear forwards`;
+            document.body.appendChild(box);
+            setTimeout(() => box.remove(), dur * 1000);
+        }
+    </script>
+</body>
+</html>  left: 50%;
   top: calc(50% + 100px);
   transform: translate(-50%, 0);
   font-size: 36px;
@@ -255,3 +543,4 @@ function createFlyingButterfly(delay) {
 </script>
 </body>
 </html>
+
